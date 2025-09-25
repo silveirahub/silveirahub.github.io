@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balanço de Ganhos - Motoyaxi Uber/99</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Balanço de Ganhos </h1>
+        <h2>Mototaxi</h2>
+
+        <div class="input-section">
+            <label for="date">Data:</label>
+            <input type="date" id="date">
+
+            <label for="uber">Ganhos Uber:</label>
+            <input type="number" id="uber" placeholder="R$ 0,00">
+
+            <label for="nine9">Ganhos 99:</label>
+            <input type="number" id="nine9" placeholder="R$ 0,00">
+
+            <label for="gas">Combustível (Litros):</label>
+            <input type="number" id="gas" placeholder="0 L">
+
+            <label for="gasPrice">Preço do Combustível (R$/L):</label>
+            <input type="number" id="gasPrice" placeholder="R$ 0,00">
+
+            <label for="otherCosts">Outros Gastos:</label>
+            <input type="number" id="otherCosts" placeholder="R$ 0,00">
+
+            <button onclick="addEntry()">Registrar</button>
+        </div>
+
+        <div class="summary-section">
+            <h2>Resumo Semanal</h2>
+            <div id="weekly-summary">
+                <p>
+                    <strong>Ganhos Totais:</strong> <span id="total-earnings">R$ 0,00</span>
+                </p>
+                <p>
+                    <strong>Gastos Totais:</strong> <span id="total-expenses">R$ 0,00</span>
+                </p>
+                <p>
+                    <strong>Balanço Final:</strong> <span id="final-balance">R$ 0,00</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h2>Histórico de Dias</h2>
+
+            <div class="table-container">
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Uber (R$)</th>
+                            <th>99 (R$)</th>
+                            <th>Combustível (R$)</th>
+                            <th>Outros Gastos (R$)</th>
+                            <th>Balanço do Dia (R$)</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js">
+
+    </script>
+</body>
+
+<!--CSS-->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+        color: #0056b3;
+        text-align: center;
+    }
+
+    .input-section, .summary-section, .history-section {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    input, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .summary-section p {
+        font-size: 1.1em;
+        font-weight: bold;
+    }
+
+    #total-earnings {
+        color: #28a745;
+    }
+    #total-expenses {
+        color: #dc3545;
+    }
+    #final-balance {
+        color: #007bff;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+    .edit-btn, .delete-btn {
+        padding: 5px 8px;
+        font-size: 0.8em;
+        margin-right: 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .edit-btn {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .edit-btn:hover {
+        background-color: #e0a800;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+
+    /* Rrgra CSS para a responsividade da tabela */
+    .table-container {
+        width: 100%;
+        /* Ocupa a largura total do container pai */
+        overflow-x: auto;
+        /* Adiciona uma barra de rolagem horizontal se o conteúdo for maior */
+        white-space: nowrap;
+        /* Impede que o conteúdo da tabela quebre a linha */
+    }
+
+    /* Opcional: para que a tabela ocupe a largura total do container */
+    table {
+        width: 100%;
+        min-width: 600px;
+        /* Garante que a tabela tenha uma largura mínima para evitar que as colunas fiquem muito apertadas */
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        white-space: normal;
+        /* Permite que o texto dentro da célula quebre a linha, se necessário */
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* Estilos dos botões */
+    .edit-btn, .delete-btn {
+        padding: 5px 8px;
+        font-size: 0.8em;
+        margin-right: 5px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+    }
+
+    .edit-btn {
+        background-color: #ffc107;
+        color: #333;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+</style>
+
+
+<!--javasctipt-->
+<script>
+    // Arrays para armazenar os dados de cada dia
+    let dailyData = [];
+    // Variável para rastrear o índice do item que está sendo editado
+    let editingIndex = null;
+
+    // Função para salvar os dados no localStorage
+    function saveData() {
+        localStorage.setItem('motoboyData', JSON.stringify(dailyData));
+    }
+
+    // Função para carregar os dados do localStorage
+    function loadData() {
+        const savedData = localStorage.getItem('motoboyData');
+        if (savedData) {
+            dailyData = JSON.parse(savedData);
+        }
+    }
+
+    // Função para adicionar/salvar um registro
+    function addEntry() {
+        const dateInput = document.getElementById('date');
+        const uberInput = document.getElementById('uber');
+        const nine9Input = document.getElementById('nine9');
+        const gasInput = document.getElementById('gas');
+        const gasPriceInput = document.getElementById('gasPrice');
+        const otherCostsInput = document.getElementById('otherCosts');
+
+        const date = dateInput.value;
+        const uber = parseFloat(uberInput.value) || 0;
+        const nine9 = parseFloat(nine9Input.value) || 0;
+        const gas = parseFloat(gasInput.value) || 0;
+        const gasPrice = parseFloat(gasPriceInput.value) || 0;
+        const otherCosts = parseFloat(otherCostsInput.value) || 0;
+
+        if (!date) {
+            alert('Por favor, preencha a data!');
+            return;
+        }
+
+        const gasCost = gas * gasPrice;
+        const dailyEarnings = uber + nine9;
+        const dailyExpenses = gasCost + otherCosts;
+        const dailyBalance = dailyEarnings - dailyExpenses;
+
+        const newEntry = {
+            date,
+            uber,
+            nine9,
+            gas,
+            // Adiciona a quantidade de litros
+            gasPrice,
+            // Adiciona o preço por litro
+            gasCost,
+            otherCosts,
+            dailyBalance
+        };
+
+        if (editingIndex !== null) {
+            // Se estiver editando, substitui o item existente
+            dailyData[editingIndex] = newEntry;
+            editingIndex = null;
+            document.querySelector('button').textContent = 'Adicionar Dia';
+        } else {
+            // Se não estiver editando, adiciona um novo item
+            dailyData.push(newEntry);
+        }
+
+        saveData();
+        updateTable();
+        updateSummary();
+
+        dateInput.value = '';
+        uberInput.value = '';
+        nine9Input.value = '';
+        gasInput.value = '';
+        gasPriceInput.value = '';
+        otherCostsInput.value = '';
+    }
+
+    // --- Funções de Ações (Deletar e Editar) ---
+
+    // Função para deletar um registro
+    function deleteEntry(index) {
+        if (confirm('Tem certeza que deseja deletar este registro?')) {
+            dailyData.splice(index, 1);
+            saveData();
+            updateTable();
+            updateSummary();
+        }
+    }
+
+    // Função para carregar os dados no formulário para edição
+    function editEntry(index) {
+        const entry = dailyData[index];
+
+        document.getElementById('date').value = entry.date;
+        document.getElementById('uber').value = entry.uber;
+        document.getElementById('nine9').value = entry.nine9;
+        document.getElementById('gas').value = entry.gas;
+        document.getElementById('gasPrice').value = entry.gasPrice;
+        document.getElementById('otherCosts').value = entry.otherCosts;
+
+        // Define o índice de edição para que a função addEntry saiba qual item atualizar
+        editingIndex = index;
+
+        // Altera o texto do botão para indicar o modo de edição
+        document.querySelector('button').textContent = 'Salvar Edição';
+    }
+
+    // --- Funções de Visualização ---
+
+    // Função para atualizar a tabela de histórico (agora com os botões)
+    function updateTable() {
+        const tableBody = document.querySelector('#history-table tbody');
+        tableBody.innerHTML = '';
+
+        dailyData.forEach((entry, index) => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+            <td>${entry.date}</td>
+            <td>R$ ${entry.uber.toFixed(2)}</td>
+            <td>R$ ${entry.nine9.toFixed(2)}</td>
+            <td>R$ ${entry.gasCost.toFixed(2)}</td>
+            <td>R$ ${entry.otherCosts.toFixed(2)}</td>
+            <td>R$ ${entry.dailyBalance.toFixed(2)}</td>
+            <td>
+            <button class="edit-btn" onclick="editEntry(${index})">Editar</button>
+            <button class="delete-btn" onclick="deleteEntry(${index})">Deletar</button>
+            </td>
+            `;
+        });
+    }
+
+    // Função para atualizar o resumo semanal/total
+    function updateSummary() {
+        const totalEarnings = dailyData.reduce((sum, entry) => sum + (entry.uber + entry.nine9), 0);
+        const totalExpenses = dailyData.reduce((sum, entry) => sum + (entry.gasCost + entry.otherCosts), 0);
+        const finalBalance = totalEarnings - totalExpenses;
+
+        document.getElementById('total-earnings').textContent = `R$ ${totalEarnings.toFixed(2)}`;
+        document.getElementById('total-expenses').textContent = `R$ ${totalExpenses.toFixed(2)}`;
+        document.getElementById('final-balance').textContent = `R$ ${finalBalance.toFixed(2)}`;
+    }
+
+    // Inicializar a aplicação: carregar os dados salvos e atualizar a interface
+    function init() {
+        loadData();
+        updateTable();
+        updateSummary();
+    }
+
+    window.onload = init;
+
+
+</script>
+
+
+  </html>
