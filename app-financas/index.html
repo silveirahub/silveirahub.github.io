@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro Diário</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+:root {
+        --primary-color: #4CAF50;
+        /* Verde para ganhos */
+        --secondary-color: #f44336;
+        /* Vermelho para gastos */
+        --bg-color: #f4f7f6;
+        --card-bg: #ffffff;
+        --text-color: #333;
+        --border-radius: 8px;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        h1, h2 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Formulário de Input */
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Botões */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background-color: #43A047;
+        }
+
+        .btn.secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn.secondary:hover {
+            background-color: #5a6268;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #eee;
+            margin: 30px 0;
+        }
+
+        /* Resumo de Saldo */
+        #balanceSummary {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* --- Modal CSS --- */
+        .modal {
+            display: none;
+            /* Escondido por padrão */
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            /* Fundo semi-transparente */
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            /* 10% do topo e centralizado */
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        /* Lista de Transações dentro do Modal */
+        .list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .trans-details {
+            flex-grow: 1;
+        }
+
+        .trans-date {
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .trans-value {
+            font-weight: bold;
+            text-align: right;
+            width: 120px;
+        }
+
+        .ganho {
+            color: var(--primary-color);
+        }
+
+        .gasto {
+            color: var(--secondary-color);
+        }
+
+    </style>
+
+
+
+    <script>
+        // Variável global para o banco de dados
+        let db = null;
+
+        // Inicializa o banco de dados SQLite via sql.js
+        async function initDatabase() {
+            try {
+                // Carrega o sql-wasm.js (já linkado no HTML)
+                const SQL = await initSqlJs({
+                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+                });
+
+                // Tenta carregar o banco de dados do localStorage (simulação de persistência)
+                const data = localStorage.getItem("financasDb");
+                if (data) {
+                    const buffer = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+                    db = new SQL.Database(buffer);
+                    console.log("Banco de dados carregado do armazenamento local.");
+                } else {
+                    // Cria um novo banco de dados se não existir
+                    db = new SQL.Database();
+                    console.log("Novo banco de dados criado.");
+
+                    // Cria a tabela de transações
+                    const sqlCreateTable = `
+                    CREATE TABLE transacoes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    data TEXT NOT NULL,
+                    tipo TEXT NOT NULL, -- 'ganho' ou 'gasto'
+                    categoria TEXT NOT NULL,
+                    descricao TEXT NOT NULL,
+                    valor REAL NOT NULL
+                    );
+                    `;
+                    db.run(sqlCreateTable);
+                    saveDatabase();
+                }
+
+                // Atualiza o resumo do saldo ao iniciar
+                updateBalanceSummary();
+
+            } catch (error) {
+                console.error("Erro ao inicializar o banco de dados:", error);
+                alert("Erro ao carregar o sistema de persistência (SQLite jswasm).");
+            }
+        }
+
+        // Salva o banco de dados no localStorage (simulação de persistência durável)
+        function saveDatabase() {
+            if (db) {
+                const data = db.export();
+                const base64 = btoa(String.fromCharCode.apply(null, data));
+                localStorage.setItem("financasDb", base64);
+                console.log("Banco de dados salvo no armazenamento local.");
+            }
+        }
+
+        // Função para inserir uma nova transação
+        function insertTransaction(event) {
+            event.preventDefault();
+            if (!db) {
+                alert("O banco de dados não está pronto.");
+                return;
+            }
+
+            const data = document.getElementById('data').value;
+            const tipo = document.getElementById('tipo').value;
+            const categoria = document.getElementById('categoria').value;
+            const descricao = document.getElementById('descricao').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+
+            if (!data || !tipo || !categoria || !descricao || isNaN(valor) || valor <= 0) {
+                alert("Por favor, preencha todos os campos com valores válidos.");
+                return;
+            }
+
+            // Prepara e executa a inserção no banco
+            const stmt = db.prepare("INSERT INTO transacoes (data, tipo, categoria, descricao, valor) VALUES (?, ?, ?, ?, ?)");
+            stmt.run([data, tipo, categoria, descricao, valor]);
+            stmt.free(); // Libera a declaração
+
+            // Salva, atualiza o resumo e limpa o formulário
+            saveDatabase();
+            updateBalanceSummary();
+            document.getElementById('transactionForm').reset();
+            alert("Transação salva com sucesso!");
+        }
+
+        // Função para calcular e exibir o resumo do saldo
+        function updateBalanceSummary() {
+            if (!db) return;
+
+            try {
+                const resultGanhos = db.exec("SELECT SUM(valor) FROM transacoes WHERE tipo = 'ganho'");
+                const totalGanhos = resultGanhos[0] ? resultGanhos[0].values[0][0] || 0: 0;
+
+                const resultGastos = db.exec("SELECT SUM(valor) FROM transacoes WHERE tipo = 'gasto'");
+                const totalGastos = resultGastos[0] ? resultGastos[0].values[0][0] || 0: 0;
+
+                const saldo = totalGanhos - totalGastos;
+
+                const summaryDiv = document.getElementById('balanceSummary');
+                summaryDiv.innerHTML = `
+                <p>Total Ganhos: <span class="ganho">R$ ${totalGanhos.toFixed(2)}</span></p>
+                <p>Total Gastos: <span class="gasto">R$ ${totalGastos.toFixed(2)}</span></p>
+                <p>Saldo Atual: <span class="${saldo >= 0 ? 'ganho': 'gasto'}">R$ ${saldo.toFixed(2)}</span></p>
+                `;
+            } catch (e) {
+                console.error("Erro ao calcular o saldo:", e);
+            }
+        }
+
+
+        // Função para carregar e exibir as transações no modal
+        function displayTransactionsInModal() {
+            if (!db) return;
+
+            try {
+                const result = db.exec("SELECT * FROM transacoes ORDER BY data DESC, id DESC");
+                const listContainer = document.getElementById('transactionList');
+                listContainer.innerHTML = ''; // Limpa a lista
+
+                if (!result[0] || result[0].values.length === 0) {
+                    listContainer.innerHTML = '<p>Nenhuma transação registrada ainda.</p>';
+                    return;
+                }
+
+                const columns = result[0].columns;
+                const rows = result[0].values;
+
+                rows.forEach(row => {
+                    // Mapeia os dados da linha para um objeto para facilitar o acesso
+                    const transaction = {};
+                    columns.forEach((col, index) => {
+                        transaction[col] = row[index];
+                    });
+
+                    const valueClass = transaction.tipo === 'ganho' ? 'ganho': 'gasto';
+                    const valueDisplay = transaction.tipo === 'ganho' ?
+                    `+ R$ ${transaction.valor.toFixed(2)}`:
+                    `- R$ ${transaction.valor.toFixed(2)}`;
+
+                    const itemHTML = `
+                    <div class="transaction-item">
+                    <div class="trans-details">
+                    <strong>${transaction.descricao}</strong>
+                    <span class="trans-date">(${transaction.data} - ${transaction.categoria})</span>
+                    </div>
+                    <div class="trans-value ${valueClass}">
+                    ${valueDisplay}
+                    </div>
+                    </div>
+                    `;
+                    listContainer.innerHTML += itemHTML;
+                });
+
+            } catch (e) {
+                console.error("Erro ao exibir transações:", e);
+                document.getElementById('transactionList').innerHTML = '<p>Erro ao carregar os dados.</p>';
+            }
+        }
+
+        // --- Controle do Modal ---
+        const modal = document.getElementById("dataModal");
+        const btn = document.getElementById("viewAllBtn");
+        const span = document.getElementsByClassName("close-btn")[0];
+
+        // Quando o usuário clica no botão, abre o modal
+        btn.onclick = function() {
+            displayTransactionsInModal(); // Carrega os dados antes de abrir
+            modal.style.display = "block";
+        }
+
+        // Quando o usuário clica no <span> (x), fecha o modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Quando o usuário clica em qualquer lugar fora do modal, fecha
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // --- Inicialização ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initDatabase();
+            document.getElementById('transactionForm').addEventListener('submit', insertTransaction);
+
+            // Define a data atual como padrão no campo de data
+            document.getElementById('data').valueAsDate = new Date();
+        });
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Controle de Ganhos e Gastos</h1>
+
+        <section class="data-input">
+            <h2>Registrar Transação</h2>
+            <form id="transactionForm">
+                <div class="input-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="input-group">
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo" required>
+                        <option value="ganho">Ganho</option>
+                        <option value="gasto">Gasto</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="categoria">Categoria:</label>
+                    <select id="categoria" required>
+                        <option value="renda">Renda</option>
+                        <option value="casa">Casa</option>
+                        <option value="comida">Comida</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="descricao">Descrição:</label>
+                    <input type="text" id="descricao" placeholder="Ex: Salário, Almoço, Gasolina" required>
+                </div>
+                <div class="input-group">
+                    <label for="valor">Valor (R$):</label>
+                    <input type="number" id="valor" step="0.01" required>
+                </div>
+                <button type="submit" class="btn primary">Salvar Transação</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section class="data-view">
+            <button id="viewAllBtn" class="btn secondary">Visualizar Todas as Transações</button>
+            <div id="balanceSummary">
+            </div>
+        </section>
+    </div>
+
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Transações Registradas</h2>
+            <div id="transactionList" class="list-container">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
