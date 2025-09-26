@@ -1,229 +1,193 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Dashboard</title>
-    <link rel="stylesheet" href="style.css"> 
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Dashboard Financeiro</h1>
-        <p>Selecionar finanças.</p>
+
+    <header class="header">
+        <h1>Painel de Controle</h1>
     </header>
 
-    <div class="menu-container">
-        <button class="menu-button" data-file="earnings-balance.html" onclick="openModalAndLoad(this)">
-            Earnings Balance
-        </button>
+    <nav class="menu-container" id="menuPrincipal">
+       
 
-        <button class="menu-button" data-file="daily-financial-control.html" onclick="openModalAndLoad(this)">
-            Daily Financial Control
-        </button>
+        <a href="https://silveirahub.github.io/earnings-balance.html" class="menu-item">
+            <i class="fas fa-chart-line menu-icon"></i> <span class="menu-text">Balanço de Ganhos Mototaxi</span>
+        </a>
 
-        <button class="menu-button" data-file="reports.html" onclick="openModalAndLoad(this)">
-            Relatórios Mensais
-        </button>
+        <a href="https://silveirahub.github.io/daily-financial-control.html" class="menu-item">
+            <i class="fas fa-calendar-check menu-icon"></i> <span class="menu-text">Controle Financeiro Diário</span>
+        </a>
 
-        <button class="menu-button" data-file="settings.html" onclick="openModalAndLoad(this)">
-            Configurações
-        </button>
-    </div>
+        <a href="#" class="menu-item">
+            <i class="fas fa-cog menu-icon"></i>
+            <span class="menu-text">Configurações</span>
+        </a>
+    </nav>
 
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2>Detalhes da Opção</h2>
-            
-            <div id="modal-content-area">
-                <p>Carregando...</p>
-            </div>
-        </div>
-    </div>
-    <style>
-        
-        
-        /* Estilos do Menu (Mantidos) */
+    <main class="content">
+        <h2>Sistema de gerenciamento e controle financeiro.</h2>
+        <p>2025 &copy; Todos os direitos reservados.</p>
+    </main>
+
+
+<style>
+    
+    /* Estilos Gerais e Reset Básico */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f9;
-    color: #333;
+    background-color: #f4f4f9;
+}
+
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
     text-align: center;
 }
-header {
-    background-color: #007bff;
-    color: white;
+
+.content {
     padding: 20px;
-    margin-bottom: 30px;
+    text-align: center;
 }
+
+/* --- Estilização do Menu --- */
 .menu-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    padding: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-.menu-button {
-    flex: 1 1 200px; 
-    padding: 25px 15px;
-    border: none;
-    border-radius: 8px;
+    display: flex; /* Habilita o Flexbox */
+    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas menores (Responsividade) */
+    justify-content: space-around; /* Distribui o espaço entre os itens */
+    align-items: flex-start; /* Alinha os itens ao topo */
+    padding: 20px 10px;
     background-color: #ffffff;
-    color: #007bff;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
 }
-.menu-button:hover {
-    background-color: #007bff;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+
+.menu-item {
+    display: flex;
+    flex-direction: column; /* Coloca o ícone acima do texto */
+    align-items: center;
+    text-align: center;
+    text-decoration: none; /* Remove o sublinhado */
+    color: #333;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.3s;
+    /* Define a largura mínima e máxima para responsividade */
+    min-width: 100px; /* Largura mínima para botões */
+    flex-grow: 1; /* Permite que os itens cresçam para preencher o espaço, mas com um limite (max-width) */
+    max-width: 200px; /* Largura máxima para evitar botões muito grandes em telas largas */
 }
+
+/* Efeito ao passar o mouse */
+.menu-item:hover {
+    background-color: #e9ecef;
+    transform: translateY(-3px); /* Efeito sutil de elevação */
+    color: #007bff; /* Mudar cor no hover */
+}
+
+.menu-icon {
+    font-size: 2.5rem; /* Tamanho do ícone */
+    margin-bottom: 8px;
+    color: #007bff; /* Cor padrão do ícone */
+}
+
+.menu-item:hover .menu-icon {
+    color: #0056b3; /* Cor do ícone no hover */
+}
+
+.menu-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+    /* Garante que o texto fique em no máximo duas linhas em telas pequenas */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Media Query para responsividade: Telas menores (como celulares) */
 @media (max-width: 600px) {
     .menu-container {
-        flex-direction: column; 
-        align-items: stretch;
+        justify-content: center; /* Centraliza os itens em telas pequenas */
+        padding: 10px 5px;
+    }
+
+    .menu-item {
+        margin: 5px;
         padding: 10px;
+        min-width: 120px; /* Aumenta um pouco a largura mínima para melhor toque */
+        flex-basis: 45%; /* Garante 2 itens por linha */
     }
-    .menu-button {
-        flex: 1 1 100%;
-        margin-bottom: 10px;
-        padding: 20px 15px;
-        font-size: 1em;
+
+    .menu-icon {
+        font-size: 2rem;
     }
 }
-/* Fim dos Estilos do Menu */
 
-/* --- Estilos do Modal --- */
-
-/* O Modal (Fundo escurecido que cobre toda a tela) */
-.modal {
-    display: none; /* Inicia oculto */
-    position: fixed; /* Fixa o modal na tela */
-    z-index: 1000; /* Garante que fique por cima de tudo */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; /* Permite rolagem se o conteúdo for grande */
-    background-color: rgba(0, 0, 0, 0.6); /* Fundo preto semi-transparente */
-    backdrop-filter: blur(3px); /* Efeito de desfoque no fundo */
+/* Estilo para garantir que em telas muito pequenas não quebre o layout */
+@media (max-width: 350px) {
+    .menu-item {
+        flex-basis: 90%; /* 1 item por linha em telas muito pequenas */
+    }
 }
 
-/* Conteúdo do Modal (A caixa branca) */
-.modal-content {
-    background-color: #ffffff;
-    margin: 5% auto; /* 10% do topo e centralizado horizontalmente */
-    padding: 5px;
-    border: 1px solid #888;
-    width: 100%; /* Largura padrão */
-    max-width: 700px; /* Largura máxima */
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    position: relative;
-    animation: fadeIn 0.5s; /* Animação de entrada */
-    text-align: left;
-}
+</style>
 
-/* Animação de entrada */
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(-50px);}
-    to {opacity: 1; transform: translateY(0);}
-}
-
-/* Botão de Fechar (X) */
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 20px;
-    padding: 0 5px;
-    transition: color 0.3s;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: #333;
-    text-decoration: none;
-}
-
-/* Área onde o conteúdo HTML será carregado */
-#modal-content-area {
-    margin-top: 5px;
-    padding-top: 5px;
-    border-top: 1px solid #eee;
-}
-
-    </style>
 <script>
-    
-    // Referência ao elemento Modal e à área de conteúdo
-const modal = document.getElementById('myModal');
-const modalContentArea = document.getElementById('modal-content-area');
+    document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.menu-item');
 
-/**
- * Abre o modal e carrega um arquivo HTML específico.
- * @param {HTMLElement} button O botão que foi clicado.
- */
-function openModalAndLoad(button) {
-    // Pega o nome do arquivo a ser carregado do atributo 'data-file' do botão
-    const fileName = button.getAttribute('data-file');
-    
-    // 1. Exibe o Modal
-    modal.style.display = 'block';
-    
-    // 2. Limpa e mostra mensagem de carregamento
-    modalContentArea.innerHTML = '<p>Carregando conteúdo de **' + fileName + '**...</p>';
+    menuItems.forEach(item => {
+        // Adiciona um listener de clique a cada item do menu
+        item.addEventListener('click', function(event) {
+            // Previne a navegação padrão para fins de demonstração.
+            // REMOVA esta linha se quiser que o link funcione normalmente.
+            // event.preventDefault();
 
-    // 3. Carrega o Conteúdo Externo
-    fetch(fileName)
-        .then(response => {
-            // Verifica se a resposta foi bem-sucedida (status 200)
-            if (!response.ok) {
-                // Lança um erro se o arquivo não for encontrado
-                throw new Error(`Erro ao carregar o arquivo: ${response.status} ${response.statusText}`);
-            }
-            // Converte a resposta para texto (o conteúdo HTML)
-            return response.text();
-        })
-        .then(htmlContent => {
-            // Insere o conteúdo HTML carregado na área do modal
-            modalContentArea.innerHTML = htmlContent;
-        })
-        .catch(error => {
-            // Exibe o erro no console e no modal
-            console.error('Falha ao carregar o arquivo HTML:', error);
-            modalContentArea.innerHTML = `<p style="color: red;">Não foi possível carregar o conteúdo. Arquivo **${fileName}** não encontrado ou erro de rede.</p>`;
+            const text = item.querySelector('.menu-text').textContent;
+            console.log(`Você clicou em: ${text}`);
+
+            // Exemplo de feedback visual via JavaScript
+            alert(`Você está indo para: ${text}`);
         });
-}
+    });
 
-/**
- * Fecha o modal.
- */
-function closeModal() {
-    modal.style.display = 'none';
-    // Opcional: Limpar o conteúdo ao fechar
-    modalContentArea.innerHTML = '';
-}
-
-// Fecha o modal se o usuário clicar fora dele
-window.onclick = function(event) {
-    if (event.target == modal) {
-        closeModal();
+    // Função que você usaria para adicionar dinamicamente um novo botão (exemplo)
+    function adicionarNovoBotao(texto, href, iconeClasse) {
+        const container = document.getElementById('menuPrincipal');
+        const novoLink = document.createElement('a');
+        novoLink.href = href;
+        novoLink.className = 'menu-item';
+        
+        novoLink.innerHTML = `
+            <i class="${iconeClasse} menu-icon"></i>
+            <span class="menu-text">${texto}</span>
+        `;
+        
+        // Adiciona o novo botão ao container
+        container.appendChild(novoLink);
+        
+        // Adiciona o event listener ao novo botão
+        novoLink.addEventListener('click', function(event) {
+            // event.preventDefault();
+            alert(`Novo botão clicado: ${texto}`);
+        });
     }
-}
+
+    // Exemplo de como usar a função para adicionar mais botões via JS:
+    // adicionarNovoBotao('Relatórios', '/relatorios', 'fas fa-file-alt');
+});
 
 </script>
-    <script src="script.js"></script> 
+    <script src="script.js"></script>
 </body>
-</html>
+        </html>
+        
