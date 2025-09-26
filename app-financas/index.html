@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
 
@@ -34,60 +34,7 @@
         <h2>Sistema de gerenciamento e controle financeiro.</h2>
         <p>2025 &copy; Todos os direitos reservados.</p>
     </main>
-
-
-<style>
-    
-    
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const menuItems = document.querySelectorAll('.menu-item');
-
-    menuItems.forEach(item => {
-        // Adiciona um listener de clique a cada item do menu
-        item.addEventListener('click', function(event) {
-            // Previne a navegação padrão para fins de demonstração.
-            // REMOVA esta linha se quiser que o link funcione normalmente.
-            // event.preventDefault();
-
-            const text = item.querySelector('.menu-text').textContent;
-            console.log(`Você clicou em: ${text}`);
-
-            // Exemplo de feedback visual via JavaScript
-            alert(`Você está indo para: ${text}`);
-        });
-    });
-
-    // Função que você usaria para adicionar dinamicamente um novo botão (exemplo)
-    function adicionarNovoBotao(texto, href, iconeClasse) {
-        const container = document.getElementById('menuPrincipal');
-        const novoLink = document.createElement('a');
-        novoLink.href = href;
-        novoLink.className = 'menu-item';
-        
-        novoLink.innerHTML = `
-            <i class="${iconeClasse} menu-icon"></i>
-            <span class="menu-text">${texto}</span>
-        `;
-        
-        // Adiciona o novo botão ao container
-        container.appendChild(novoLink);
-        
-        // Adiciona o event listener ao novo botão
-        novoLink.addEventListener('click', function(event) {
-            // event.preventDefault();
-            alert(`Novo botão clicado: ${texto}`);
-        });
-    }
-
-    // Exemplo de como usar a função para adicionar mais botões via JS:
-    // adicionarNovoBotao('Relatórios', '/relatorios', 'fas fa-file-alt');
-});
-
-</script>
-    <script src="script.js"></script>
+    <script src="dashboard.js"></script>
 </body>
         </html>
         
