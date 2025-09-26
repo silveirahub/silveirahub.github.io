@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro Diário</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+    --primary-color: #3498db; /* Azul */
+    --secondary-color: #2ecc71; /* Verde (Ganho) */
+    --danger-color: #e74c3c; /* Vermelho (Gasto/Excluir) */
+    --edit-color: #f39c12; /* Laranja para Edição */
+    --background-color: #f4f7f6;
+    --card-background: #ffffff;
+    --text-color: #2c3e50;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Estilo para as Seções de Conteúdo */
+.data-input, .data-summary {
+    background-color: var(--card-background);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    flex: 1; 
+    min-width: 300px;
+}
+
+/* Estilo do Formulário */
+#registroForm label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#registroForm input, #registroForm select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#registroForm button, #abrirModalBtn, #limparDadosBtn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+#abrirModalBtn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#registroForm button:hover, #abrirModalBtn:hover, #limparDadosBtn:hover {
+    background-color: #2980b9;
+}
+
+/* Cores no Resumo */
+#totalGanhos { color: var(--secondary-color); font-weight: bold; }
+#totalGastos { color: var(--danger-color); font-weight: bold; }
+#saldoAtual { font-weight: bold; }
+.saldo-positivo { color: var(--secondary-color); }
+.saldo-negativo { color: var(--danger-color); }
+
+
+/* Estilo dos Controles de Filtro */
+/**
+
+.filter-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    flex-wrap: wrap; 
+}
+
+.filter-controls label {
+    font-weight: normal;
+    white-space: wrap; 
+}
+
+.filter-controls select,
+.filter-controls input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#aplicarFiltrosBtn {
+    background-color: var(--secondary-color);
+    margin-top: 1em; 
+}
+
+#aplicarFiltrosBtn:hover {
+    background-color: #27ae60;
+}
+*/
+
+.filter-controls {
+    /* Usa Flexbox para um layout fácil de gerenciar */
+    display: flex;
+    /* Envolve os itens para a próxima linha se não houver espaço suficiente */
+    flex-wrap: wrap;
+    /* Alinha os itens ao longo do eixo principal (horizontal) */
+    /* Você pode ajustar isso para 'space-between', 'center', etc. */
+    justify-content: flex-start; 
+    /* Adiciona um pouco de espaço interno para não colar nas bordas */
+    padding: 15px;
+    /* Adiciona uma borda sutil para destacar a área de controle */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    gap: 15px; /* Espaço entre os itens do flex container */
+    background-color: #f9f9f9;
+}
+
+/* Estilo para os rótulos */
+.filter-controls label {
+    font-weight: bold;
+    color: #333;
+    /* Adiciona margem direita para separar do input/select (se não estiver usando gap) */
+    /* margin-right: 5px; */ 
+}
+
+/* Estilo para inputs e selects */
+.filter-controls select,
+.filter-controls input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    /* Garante que o select/input não fique muito pequeno */
+    min-width: 150px; 
+}
+
+/* Estilo para o botão de aplicar filtros */
+.filter-controls #aplicarFiltrosBtn {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-end; /* Alinha o botão na parte inferior se houver diferentes alturas */
+}
+
+.filter-controls #aplicarFiltrosBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Ajuste para garantir que a opção 'select' e seus elementos 
+   (rótulo e o próprio select) fiquem alinhados se estivessem em uma linha separada
+   ou, se a sua intenção é que o SELECT esteja na direita em outra linha: 
+*/
+/*
+   Se a intenção for agrupar label + select/input em blocos separados
+   para ter o controle de posição na vertical/direita:
+*/
+/*
+   Para mover o SELECT 'filtroCategoria' para o canto direito se 
+   houver espaço e for a última linha:
+*/
+/* Você pode criar um agrupamento para mover elementos específicos */
+.filter-controls > *:nth-child(2) {
+    /* Este é o <select id="filtroCategoria"> após o <label> */
+    /* Não é o melhor se o layout mudar, mas demonstra como segmentar */
+    /* display: flex;  */
+}
+
+
+/* Estilo do MODAL */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.modal-content {
+    background-color: var(--card-background);
+    margin: 5% auto; 
+    padding: 30px;
+    width: 90%;
+    max-width: 950px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--danger-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Estilo da Tabela dentro do Modal */
+#historicoTabela {
+    max-height: 400px; 
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+#historicoTabela table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#historicoTabela th, #historicoTabela td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#historicoTabela th {
+    background-color: var(--primary-color);
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+/* Cores específicas na tabela */
+.tipo-ganho { color: var(--secondary-color); font-weight: bold; }
+.tipo-gasto { color: var(--danger-color); font-weight: bold; }
+
+/* Estilo dos Botões de Ação na Tabela */
+.action-btn {
+    padding: 5px 8px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.edit-btn {
+    background-color: var(--edit-color);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #e67e22;
+}
+
+.delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+    </style>
+  
+</head>
+<body>
+
+    <header>
+        <h1>Controle de Finanças Diário</h1>
+    </header>
+
+    <main>
+        <section class="data-input">
+            <h2>Novo Registro / Edição</h2>
+            <form id="registroForm">
+                <label for="tipo">Tipo:</label>
+                <select id="tipo" required>
+                    <option value="ganho">Ganho (Renda)</option>
+                    <option value="gasto">Gasto (Despesa)</option>
+                </select>
+
+                <label for="categoria">Categoria:</label>
+                <select id="categoria" required>
+                    <option value="casa">Casa</option>
+                    <option value="comida">Comida</option>
+                    <option value="transporte">Transporte</option>
+                    <option value="renda">Renda</option>
+                    <option value="outros">Outros</option>
+                </select>
+
+                <label for="valor">Valor (R$):</label>
+                <input type="number" id="valor" step="0.01" required>
+
+                <label for="descricao">Descrição:</label>
+                <input type="text" id="descricao" required>
+
+                <label for="data">Data:</label>
+                <input type="date" id="data" required>
+
+                <button type="submit">Registrar</button>
+            </form>
+        </section>
+
+        <section class="data-summary">
+            <h2>Resumo Rápido</h2>
+            <p>Total de Ganhos: <span id="totalGanhos">R$ 0.00</span></p>
+            <p>Total de Gastos: <span id="totalGastos">R$ 0.00</span></p>
+            <p>Saldo Atual: <span id="saldoAtual">R$ 0.00</span></p>
+
+            <button id="abrirModalBtn">Visualizar Histórico Completo</button>
+        </section>
+    </main>
+
+    <div id="historicoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Histórico Completo de Transações</h2>
+
+            <div class="filter-controls">
+                <label for="filtroCategoria">Categoria:</label>
+                <select id="filtroCategoria">
+                    <option value="todos">Todas</option>
+                    <option value="casa">Casa</option>
+                    <option value="comida">Comida</option>
+                    <option value="transporte">Transporte</option>
+                    <option value="renda">Renda</option>
+                    <option value="outros">Outros</option>
+                </select>
+                <Br>
+                <label for="filtroDataInicio">De:</label>
+                <input type="date" id="filtroDataInicio">
+                <p>
+                <label for="filtroDataFim">Até:</label>
+                <input type="date" id="filtroDataFim">
+                </p>
+                <button id="aplicarFiltrosBtn">Aplicar Filtros</button>
+            </div>
+            <div id="historicoTabela">
+                <p>Nenhum registro encontrado.</p>
+            </div>
+            <button id="limparDadosBtn">Limpar Todos os Dados</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+      <script>
+        // --- VARIÁVEIS DO DOM ---
+const registroForm = document.getElementById('registroForm');
+const abrirModalBtn = document.getElementById('abrirModalBtn');
+const fecharModalBtn = document.querySelector('.close-btn');
+const modal = document.getElementById('historicoModal');
+const historicoTabelaDiv = document.getElementById('historicoTabela');
+const limparDadosBtn = document.getElementById('limparDadosBtn');
+
+// Resumo
+const totalGanhosEl = document.getElementById('totalGanhos');
+const totalGastosEl = document.getElementById('totalGastos');
+const saldoAtualEl = document.getElementById('saldoAtual');
+
+// Filtros
+const filtroCategoriaEl = document.getElementById('filtroCategoria');
+const filtroDataInicioEl = document.getElementById('filtroDataInicio');
+const filtroDataFimEl = document.getElementById('filtroDataFim');
+const aplicarFiltrosBtn = document.getElementById('aplicarFiltrosBtn');
+
+// Variável para rastrear se estamos em modo de edição
+let registroEmEdicaoId = null; 
+
+// --- FUNÇÕES DE ARMAZENAMENTO E RESUMO ---
+
+function carregarRegistros() {
+    const registrosJSON = localStorage.getItem('financasDiarias');
+    return registrosJSON ? JSON.parse(registrosJSON) : [];
+}
+
+function salvarRegistros(registros) {
+    localStorage.setItem('financasDiarias', JSON.stringify(registros));
+    atualizarResumo(); 
+}
+
+function atualizarResumo() {
+    const registros = carregarRegistros();
+    let totalGanhos = 0;
+    let totalGastos = 0;
+
+    registros.forEach(registro => {
+        const valor = parseFloat(registro.valor) || 0;
+        
+        if (registro.tipo === 'ganho') {
+            totalGanhos += valor;
+        } else if (registro.tipo === 'gasto') {
+            totalGastos += valor;
+        }
+    });
+
+    const saldoAtual = totalGanhos - totalGastos;
+
+    totalGanhosEl.textContent = `R$ ${totalGanhos.toFixed(2)}`;
+    totalGastosEl.textContent = `R$ ${totalGastos.toFixed(2)}`;
+    saldoAtualEl.textContent = `R$ ${saldoAtual.toFixed(2)}`;
+    
+    saldoAtualEl.classList.remove('saldo-positivo', 'saldo-negativo');
+    if (saldoAtual >= 0) {
+        saldoAtualEl.classList.add('saldo-positivo');
+    } else {
+        saldoAtualEl.classList.add('saldo-negativo');
+    }
+}
+
+// --- LÓGICA DE FILTRAGEM ---
+
+function filtrarRegistros(registros) {
+    const categoria = filtroCategoriaEl.value;
+    const dataInicio = filtroDataInicioEl.value;
+    const dataFim = filtroDataFimEl.value;
+
+    const registrosFiltrados = registros.filter(registro => {
+        const filtroCategoriaPassou = categoria === 'todos' || registro.categoria === categoria;
+        let filtroDataPassou = true;
+        
+        // Se houver data de início, verifica se o registro é posterior
+        if (dataInicio && registro.data < dataInicio) {
+            filtroDataPassou = false;
+        }
+        
+        // Se houver data de fim, verifica se o registro é anterior
+        if (dataFim && registro.data > dataFim) {
+            filtroDataPassou = false;
+        }
+
+        return filtroCategoriaPassou && filtroDataPassou;
+    });
+
+    // Ordena por data mais recente
+    return registrosFiltrados.sort((a, b) => new Date(b.data) - new Date(a.data)); 
+}
+
+// --- FUNÇÕES DE VISUALIZAÇÃO E AÇÕES (Modal) ---
+
+function renderizarTabelaHistorico() {
+    const todosRegistros = carregarRegistros();
+    const registrosFiltrados = filtrarRegistros(todosRegistros);
+    
+    historicoTabelaDiv.innerHTML = ''; 
+
+    if (registrosFiltrados.length === 0) {
+        historicoTabelaDiv.innerHTML = '<p>Nenhum registro encontrado com os critérios de filtro.</p>';
+        return;
+    }
+
+    let tabelaHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Categoria</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Ações</th> 
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    registrosFiltrados.forEach(registro => {
+        const classeTipo = registro.tipo === 'ganho' ? 'tipo-ganho' : 'tipo-gasto';
+        tabelaHTML += `
+            <tr>
+                <td>${registro.data}</td>
+                <td class="${classeTipo}">${registro.tipo.toUpperCase()}</td>
+                <td>${registro.categoria.charAt(0).toUpperCase() + registro.categoria.slice(1)}</td>
+                <td>${registro.descricao}</td>
+                <td>R$ ${registro.valor.toFixed(2)}</td>
+                <td>
+                    <button class="action-btn edit-btn" onclick="iniciarEdicao(${registro.id})">Editar</button>
+                    <button class="action-btn delete-btn" onclick="excluirRegistro(${registro.id})">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    tabelaHTML += `
+            </tbody>
+        </table>
+    `;
+
+    historicoTabelaDiv.innerHTML = tabelaHTML;
+}
+
+function excluirRegistro(id) {
+    if (confirm('Tem certeza que deseja excluir este registro?')) {
+        let registros = carregarRegistros();
+        registros = registros.filter(registro => registro.id !== id);
+        
+        salvarRegistros(registros);
+        renderizarTabelaHistorico(); // Atualiza a tabela no modal
+    }
+}
+
+// Expõe a função ao escopo global para ser chamada pelo 'onclick' do HTML
+window.excluirRegistro = excluirRegistro; 
+
+function iniciarEdicao(id) {
+    const registros = carregarRegistros();
+    const registro = registros.find(r => r.id === id);
+
+    if (registro) {
+        // 1. Preenche o formulário
+        document.getElementById('tipo').value = registro.tipo;
+        document.getElementById('categoria').value = registro.categoria;
+        document.getElementById('valor').value = registro.valor;
+        document.getElementById('descricao').value = registro.descricao;
+        document.getElementById('data').value = registro.data;
+        
+        // 2. Define o modo edição
+        registroEmEdicaoId = id;
+        
+        // 3. Altera o texto do botão
+        registroForm.querySelector('button[type="submit"]').textContent = 'Salvar Edição';
+
+        // 4. Fecha o modal e scroll para o formulário
+        modal.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+// Expõe a função ao escopo global para ser chamada pelo 'onclick' do HTML
+window.iniciarEdicao = iniciarEdicao; 
+
+
+// --- EVENT LISTENERS GERAIS ---
+
+// Listener para o formulário (Criação ou Edição)
+registroForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const novoOuEditadoRegistro = {
+        tipo: document.getElementById('tipo').value,
+        categoria: document.getElementById('categoria').value,
+        valor: parseFloat(document.getElementById('valor').value),
+        descricao: document.getElementById('descricao').value,
+        data: document.getElementById('data').value,
+    };
+
+    let registros = carregarRegistros();
+    
+    if (registroEmEdicaoId) {
+        // MODO EDIÇÃO
+        const index = registros.findIndex(r => r.id === registroEmEdicaoId);
+        if (index !== -1) {
+            registros[index] = { ...novoOuEditadoRegistro, id: registroEmEdicaoId };
+        }
+        
+        // Volta para o modo criação
+        registroEmEdicaoId = null; 
+        registroForm.querySelector('button[type="submit"]').textContent = 'Registrar';
+        alert('Registro editado com sucesso!');
+
+    } else {
+        // MODO CRIAÇÃO
+        novoOuEditadoRegistro.id = Date.now(); // Novo ID único
+        registros.push(novoOuEditadoRegistro);
+        alert('Registro salvo com sucesso!');
+    }
+
+    salvarRegistros(registros);
+    registroForm.reset();
+});
+
+
+// Evento do botão Aplicar Filtros (re-renderiza a tabela no modal)
+aplicarFiltrosBtn.addEventListener('click', renderizarTabelaHistorico);
+
+// Abre o Modal
+abrirModalBtn.addEventListener('click', function() {
+    renderizarTabelaHistorico();
+    modal.style.display = 'block';
+});
+
+// Fecha Modal
+fecharModalBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+});
+
+// Fecha Modal ao clicar fora
+window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// Limpa todos os dados
+limparDadosBtn.addEventListener('click', function() {
+    if (confirm('Tem certeza que deseja APAGAR TODOS os dados? Esta ação é irreversível!')) {
+        localStorage.removeItem('financasDiarias');
+        alert('Todos os dados foram apagados!');
+        modal.style.display = 'none';
+        atualizarResumo(); 
+    }
+});
+
+
+// --- INICIALIZAÇÃO ---
+document.addEventListener('DOMContentLoaded', atualizarResumo);
+
+    </script>
+</body>
+</html>
