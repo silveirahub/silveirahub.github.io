@@ -1,0 +1,296 @@
+:root {
+    --primary-color: #3498db; /* Azul */
+    --secondary-color: #2ecc71; /* Verde (Ganho) */
+    --danger-color: #e74c3c; /* Vermelho (Gasto/Excluir) */
+    --edit-color: #f39c12; /* Laranja para Edição */
+    --background-color: #f4f7f6;
+    --card-background: #ffffff;
+    --text-color: #2c3e50;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Estilo para as Seções de Conteúdo */
+.data-input, .data-summary {
+    background-color: var(--card-background);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    flex: 1; 
+    min-width: 300px;
+}
+
+/* Estilo do Formulário */
+#registroForm label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#registroForm input, #registroForm select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#registroForm button, #abrirModalBtn, #limparDadosBtn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+#abrirModalBtn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#registroForm button:hover, #abrirModalBtn:hover, #limparDadosBtn:hover {
+    background-color: #2980b9;
+}
+
+/* Cores no Resumo */
+#totalGanhos { color: var(--secondary-color); font-weight: bold; }
+#totalGastos { color: var(--danger-color); font-weight: bold; }
+#saldoAtual { font-weight: bold; }
+.saldo-positivo { color: var(--secondary-color); }
+.saldo-negativo { color: var(--danger-color); }
+
+
+/* Estilo dos Controles de Filtro */
+/**
+
+.filter-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    flex-wrap: wrap; 
+}
+
+.filter-controls label {
+    font-weight: normal;
+    white-space: wrap; 
+}
+
+.filter-controls select,
+.filter-controls input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#aplicarFiltrosBtn {
+    background-color: var(--secondary-color);
+    margin-top: 1em; 
+}
+
+#aplicarFiltrosBtn:hover {
+    background-color: #27ae60;
+}
+*/
+
+.filter-controls {
+    /* Usa Flexbox para um layout fácil de gerenciar */
+    display: flex;
+    /* Envolve os itens para a próxima linha se não houver espaço suficiente */
+    flex-wrap: wrap;
+    /* Alinha os itens ao longo do eixo principal (horizontal) */
+    /* Você pode ajustar isso para 'space-between', 'center', etc. */
+    justify-content: flex-start; 
+    /* Adiciona um pouco de espaço interno para não colar nas bordas */
+    padding: 15px;
+    /* Adiciona uma borda sutil para destacar a área de controle */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    gap: 15px; /* Espaço entre os itens do flex container */
+    background-color: #f9f9f9;
+}
+
+/* Estilo para os rótulos */
+.filter-controls label {
+    font-weight: bold;
+    color: #333;
+    /* Adiciona margem direita para separar do input/select (se não estiver usando gap) */
+    /* margin-right: 5px; */ 
+}
+
+/* Estilo para inputs e selects */
+.filter-controls select,
+.filter-controls input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    /* Garante que o select/input não fique muito pequeno */
+    min-width: 150px; 
+}
+
+/* Estilo para o botão de aplicar filtros */
+.filter-controls #aplicarFiltrosBtn {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-end; /* Alinha o botão na parte inferior se houver diferentes alturas */
+}
+
+.filter-controls #aplicarFiltrosBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Ajuste para garantir que a opção 'select' e seus elementos 
+   (rótulo e o próprio select) fiquem alinhados se estivessem em uma linha separada
+   ou, se a sua intenção é que o SELECT esteja na direita em outra linha: 
+*/
+/*
+   Se a intenção for agrupar label + select/input em blocos separados
+   para ter o controle de posição na vertical/direita:
+*/
+/*
+   Para mover o SELECT 'filtroCategoria' para o canto direito se 
+   houver espaço e for a última linha:
+*/
+/* Você pode criar um agrupamento para mover elementos específicos */
+.filter-controls > *:nth-child(2) {
+    /* Este é o <select id="filtroCategoria"> após o <label> */
+    /* Não é o melhor se o layout mudar, mas demonstra como segmentar */
+    /* display: flex;  */
+}
+
+
+/* Estilo do MODAL */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.modal-content {
+    background-color: var(--card-background);
+    margin: 5% auto; 
+    padding: 30px;
+    width: 90%;
+    max-width: 950px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--danger-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Estilo da Tabela dentro do Modal */
+#historicoTabela {
+    max-height: 400px; 
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+#historicoTabela table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#historicoTabela th, #historicoTabela td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#historicoTabela th {
+    background-color: var(--primary-color);
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+/* Cores específicas na tabela */
+.tipo-ganho { color: var(--secondary-color); font-weight: bold; }
+.tipo-gasto { color: var(--danger-color); font-weight: bold; }
+
+/* Estilo dos Botões de Ação na Tabela */
+.action-btn {
+    padding: 5px 8px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.edit-btn {
+    background-color: var(--edit-color);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #e67e22;
+}
+
+.delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+      }
