@@ -1,0 +1,100 @@
+/* Estilos Gerais e Reset Básico */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.content {
+    padding: 20px;
+    text-align: center;
+}
+
+/* --- Estilização do Menu --- */
+.menu-container {
+    display: flex; /* Habilita o Flexbox */
+    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas menores (Responsividade) */
+    justify-content: space-around; /* Distribui o espaço entre os itens */
+    align-items: flex-start; /* Alinha os itens ao topo */
+    padding: 20px 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item {
+    display: flex;
+    flex-direction: column; /* Coloca o ícone acima do texto */
+    align-items: center;
+    text-align: center;
+    text-decoration: none; /* Remove o sublinhado */
+    color: #333;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.3s;
+    /* Define a largura mínima e máxima para responsividade */
+    min-width: 100px; /* Largura mínima para botões */
+    flex-grow: 1; /* Permite que os itens cresçam para preencher o espaço, mas com um limite (max-width) */
+    max-width: 200px; /* Largura máxima para evitar botões muito grandes em telas largas */
+}
+
+/* Efeito ao passar o mouse */
+.menu-item:hover {
+    background-color: #e9ecef;
+    transform: translateY(-3px); /* Efeito sutil de elevação */
+    color: #007bff; /* Mudar cor no hover */
+}
+
+.menu-icon {
+    font-size: 2.5rem; /* Tamanho do ícone */
+    margin-bottom: 8px;
+    color: #007bff; /* Cor padrão do ícone */
+}
+
+.menu-item:hover .menu-icon {
+    color: #0056b3; /* Cor do ícone no hover */
+}
+
+.menu-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+    /* Garante que o texto fique em no máximo duas linhas em telas pequenas */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Media Query para responsividade: Telas menores (como celulares) */
+@media (max-width: 600px) {
+    .menu-container {
+        justify-content: center; /* Centraliza os itens em telas pequenas */
+        padding: 10px 5px;
+    }
+
+    .menu-item {
+        margin: 5px;
+        padding: 10px;
+        min-width: 120px; /* Aumenta um pouco a largura mínima para melhor toque */
+        flex-basis: 45%; /* Garante 2 itens por linha */
+    }
+
+    .menu-icon {
+        font-size: 2rem;
+    }
+}
+
+/* Estilo para garantir que em telas muito pequenas não quebre o layout */
+@media (max-width: 350px) {
+    .menu-item {
+        flex-basis: 90%; /* 1 item por linha em telas muito pequenas */
+    }
+      }
